@@ -1,0 +1,21 @@
+name,specification
+id,patient
+longtablename,lab_cd4
+longvar,cd4_v
+longvardate,cd4_d
+longsubset,function(longvar) longvar > 0 & !is.na(longvar)
+eventtablename,follow
+event,death_y
+enddate,l_alive_d
+grouptablename,basic
+group,aids_preart_y
+groupsubset,
+starttablename,art
+startdate,art_sd
+starttype,first
+longvartrans,sqrt
+maxtime,730
+long2eventwindow,
+longvarlim,"c(0,1500)"
+problim,
+longlabels,"c(0,25,100,150,350,500,1000,2000,5000)"
