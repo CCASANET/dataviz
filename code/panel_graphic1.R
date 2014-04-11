@@ -19,7 +19,6 @@
 #
 #############################################################
 # setwd("~/Projects/CCASAnet/dataviz")
-# source("code/panel_graphic1.R")
 rm(list=ls()) # SHOULD BE FIRST LINE IN ALL R PROGRAMS - CLEARS NAMESPACE
 library(scales)
 library(RColorBrewer)
@@ -65,6 +64,7 @@ if(!exists("starttype")) starttype <- "first"
 if(longvartrans=="I") longvarbacktrans <- match.fun(I)
 if(longvartrans=="sqrt") longvarbacktrans <- function (x) x^2
 if(longvartrans=="log") longvarbacktrans <- match.fun(exp)
+if(longvartrans=="log10") longvarbacktrans <- function (x) 10^x
 
 ## PULL IN RELEVANT DATA AND FORMATS
 ## LONGITUDINAL

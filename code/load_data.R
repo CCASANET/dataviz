@@ -34,9 +34,4 @@ for(i in 1:length(readtables)){
      assign(readtables[i],readcsv)
    }
 }
-if(exists("art")) art$patient <- paste(art$patient,art$site,sep="-")
-if(exists("basic")) basic$patient <- paste(basic$patient,basic$site,sep="-")
-if(exists("follow")) follow$patient <- paste(follow$patient,follow$site,sep="-")
-if(exists("lab_cd4")) lab_cd4$patient <- paste(lab_cd4$patient,lab_cd4$site,sep="-")
-if(exists("lab_rna")) lab_rna$patient <- paste(lab_rna$patient,lab_rna$site,sep="-")
-if(exists("visit")) visit$patient <- paste(visit$patient,visit$site,sep="-")
+
