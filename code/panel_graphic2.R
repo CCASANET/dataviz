@@ -52,6 +52,7 @@ source("code/load_data.R")
 vartable <- get(vartable)
 if(exists("var1")){var1 <- eval(parse(text=var1))}
 if(exists("var2")){var2 <- eval(parse(text=var2))}
+if(exists("minnum")){minnum <- as.numeric(minnum)}
 if(exists("vartablesubset")){
   vartablesubset <- eval(parse(text=vartablesubset))
   vartable <- vartable[vartablesubset,]
