@@ -20,11 +20,18 @@
 #############################################################
 # setwd("~/Projects/CCASAnet/dataviz")
 rm(list=ls()) # SHOULD BE FIRST LINE IN ALL R PROGRAMS - CLEARS NAMESPACE
+
+## Rather than instruct the user to install packages, these calls look for existing packages
+##    and install required packages. 
+required_packages <- c("scales","RColorBrewer","rms","brew")
+install_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
+if(length(install_packages)) install.packages(install_packages)
+
+## Load the packages required for this script
 library(scales)
 library(RColorBrewer)
 library(rms)
-
-
+library(brew)
 set.seed(2)
 
 ## READ IN UTILITY FUNCTIONS
@@ -49,7 +56,9 @@ if(exists("maxtime")){maxtime <- eval(parse(text=maxtime))}
 if(exists("long2eventwindow")){long2eventwindow <- eval(parse(text=long2eventwindow))}
 if(exists("longvarlim")){longvarlim <- eval(parse(text=longvarlim))}
 if(exists("problim")){problim <- eval(parse(text=problim))}
-if(exists("longlabels")){longlabels <- eval(parse(text=longlabels))}
+if(exists("longticks")){longticks <- eval(parse(text=longticks))}
+
+
 
 ## READ IN DATA FILES
 readtables <- unique(c(longtablename,eventtablename,grouptablename,starttablename))
@@ -155,8 +164,17 @@ groupcolvec2 <- formatch2[match(longevent2$group,formatch2[,2]),1]
 groupcolvec2 <- droplevels(groupcolvec2)
 eventcol <- groupcolvec2[longevent2$event==1]
 
-if(!exists("longlabels")) longlabels <- longvarbacktrans(pretty(sapply(longvarlim,longvartrans),n=5))
-
+## ADDED TO ALLOW MORE PERSONALIZATION
+if(!exists("longticks")) longticks <- longvarbacktrans(pretty(sapply(longvarlim,longvartrans),n=5))
+if(!exists("longlabel")) longlabel <- "Longitudinal Value"
+if(!exists("timelabel")) timelabel <- "Days"
+if(!exists("eventlabel")) eventlabel <- "Probability of Event"
+if(exists("grouplabels")){
+  grplab <- data.frame(do.call(rbind,strsplit(unlist(strsplit(grouplabels,"|",fixed=TRUE)),"=",fixed=TRUE)),stringsAsFactors=FALSE)
+  grouplabel <- c(grplab[match(tgroup,grplab[,1]),2],"Combined")
+}
+if(!exists("grouplabels")) grouplabel <- paste0(c(rep("Group ",ngroup),"Combined"),c(tgroup,""))
+                                                
 ## WRITE PICTURE FILES -- CREATE OUTPUT DIRECTORY (IF NEEDED)
 wd <- getwd(); if(!file.exists("output")){dir.create(file.path(wd,"output"))}
 if(!file.exists("output/scroll_images")){dir.create(file.path(wd,"output/scroll_images"))}
@@ -167,12 +185,12 @@ for(i in 1:maxtime)
     ## PANEL 2
     par(fig=c(0,0.9,0.5,1))
     plot(1:10,1:10,ylim=sapply(longvarlim,longvartrans),xlim=c(0,min(i+5,maxtime)),col=0,axes=FALSE,
-        main=paste("Days 0 to ",i,"",sep=""),xlab="Days from Start",ylab="Longitudinal Value")
+        main=paste("Days 0 to ",i,"",sep=""),xlab=timelabel,ylab=longlabel)
     points(x=longevent$start2long,y=longevent$tlongvar,pch=20,cex=0.2,col=alpha(groupcolvec1,0.35))
     points(x=deathx,y=eventy,pch=4,col=alpha(eventcol,.6))
     for(j in 1:ngroup) lines(get(paste0("plot_lowess_event",tgroup[j])), col = grouppalette[j], lwd=2)
     axis(1)
-    axis(2,at=sapply(longlabels,longvartrans),label=round(longlabels))
+    axis(2,at=sapply(longticks,longvartrans),label=round(longticks))
     ## PANEL 2b
     par(fig=c(0.75,1,0.5,1), new=TRUE)
     longevent$current_d <- get(names(onestart)[2],longevent) + i
@@ -191,15 +209,15 @@ for(i in 1:maxtime)
     ## PANEL 1
     par(fig=c(0,1,0,0.5), new=TRUE)
     plot(1:10,1:10,ylim=problim,xlim=c(0,min(i+5,maxtime)),col=0,axes=FALSE,
-        main="",xlab="Days from Start",ylab="Probability of Event")
-    lines(survfit(S~1),lty=1,fun="event",mark.time=FALSE,xmax=maxtime,col=alpha(grey(.3),.45),lwd=3)
-    for(j in 1:ngroup) lines(survfit(get(paste0("S.",tgroup[j]))~1),lty=1,fun="event",mark.time=FALSE,xmax=maxtime,col=grouppalette[j],lwd=2)
-    legend("topleft",lty=1,lwd=c(rep(2,ngroup),3),paste0(c(rep("Group ",ngroup),"Combined"),c(tgroup,"")," (n=",c(n1,n),")"),col=c(grouppalette[1:ngroup],alpha(grey(.3),.45)),text.col = c(grouppalette[1:ngroup],grey(.3)),bty='n')
+        main="",xlab=timelabel,ylab=eventlabel)
+    lines(survfit(S~1,conf.type="none"),lty=1,fun="event",mark.time=FALSE,xmax=maxtime,col=alpha(grey(.3),.45),lwd=3)
+    for(j in 1:ngroup) lines(survfit(get(paste0("S.",tgroup[j]))~1,conf.type="none"),lty=1,fun="event",mark.time=FALSE,xmax=maxtime,col=grouppalette[j],lwd=2)
+    legend("topleft",lty=1,lwd=c(rep(2,ngroup),3),paste0(grouplabel," (n=",c(n1,n),")"),col=c(grouppalette[1:ngroup],alpha(grey(.3),.45)),text.col = c(grouppalette[1:ngroup],grey(.3)),bty='n')
     axis(1)
     axis(2)
     dev.off()
 }
 panelkey <- "panel_graphic1_"
 
-library(brew)
+
 brew('code/scroll.brew', output='output/panel1_viewer.html')

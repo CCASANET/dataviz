@@ -23,7 +23,7 @@
                 <div id="slider" style="margin-left:10px;margin-top:12px;float:left;width:770px;vertical-align:middle;"></div>
                 <br>
                 <p style="font-size:10pt;text-align: center;">
-                    <label for="amount">Days 0 to </label>
+                    <label for="amount">Slides 0 to </label>
                     <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold; width:30px;">                         
                 </p>                
             </div>           
@@ -40,7 +40,7 @@ $(document).ready(function () {
    $('#slideshow').cycle({       
    	fx: "none",
    	timeout: 1,
-        speed: 1,        
+        speed: <%=ifelse(exists("speed"),speed,1)%>,        
         continuous: 1,
         loader: "wait", //wait for all images to load before slideshow starts
         swipe: true,
