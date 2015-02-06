@@ -1,0 +1,15 @@
+name,specification
+vartable,basic
+var1,"basic$mode %in% c(""Bisexual"",""Homosexual contact"",""Homo/Bisexual and Injecting drug user"") & basic$male==1"
+var2,"as.numeric(convertdate(baseline_d,basic) - convertdate(birth_d,basic))/365.25 < 25"
+vartablesubset,"format(convertdate(baseline_d,basic),""%Y"") > 1998 & format(convertdate(baseline_d,basic),""%Y"") < 2008 & !(basic$mode %in% c(90,""Unknown""))"
+eventdate,baseline_d
+eventperiod,year
+group,site
+var1label1,MSM
+var1label0,non-MSM
+var2label1,<25
+var2label0,25 or more
+var1label,Proportion MSM
+var2label,Proportion aged<25 at HIV diagnosis
+minnum,10
