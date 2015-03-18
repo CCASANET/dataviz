@@ -29,7 +29,7 @@ if(length(install_packages)) install.packages(install_packages)
 set.seed(2)
 
 ## READ IN UTILITY FUNCTIONS
-source("~/Projects/IeDEAS/qa-checks-r/code/utility_functions.R")
+source("code/utility_functions.R")
 
 specs <- read.csv("input/panel2_specs.csv",header=TRUE,stringsAsFactors = FALSE,na.strings=c(NA,""))
 
@@ -118,13 +118,19 @@ library(scales)
 ngroup <- length(unique(data$group))
 nx <- ceiling(sqrt(ngroup))
 ny <- floor(sqrt(ngroup))
+if(nx*ny < ngroup){
+  nx <- nx + 1
+}
 gridx <- seq(0,1,length.out=nx+1)
 gridy <- seq(0,0.5,length.out=ny+1)
+gridy3 <- seq(0,1,length.out=ny+1)
 figspace <- cbind(gridx[-(nx+1)],gridx[-1],gridy[1],gridy[2])
+figspace3 <- cbind(gridy3[1],gridy3[2],gridx[-(nx+1)],gridx[-1])
 for(ni in 2:ny){
-  figspace <- rbind(figspace,cbind(gridx[-4],gridx[-1],gridy[ni],gridy[ni+1]))
+  figspace <- rbind(figspace,cbind(gridx[-(nx+1)],gridx[-1],gridy[ni],gridy[ni+1]))
+  figspace3 <- rbind(figspace3,cbind(gridy3[ni],gridy3[ni+1],gridx[-(nx+1)],gridx[-1]))
 }
-
+figspace3 <- figspace3[order(figspace3[,ny+1],decreasing=TRUE),]
 
 agg1a <- aggregate(var1 & var2,by=list(group,eventtime),FUN="mean",na.rm=TRUE)
 names(agg1a) <- c("group","year","var1_var2_dist") ## var1_nonvar2
@@ -154,7 +160,14 @@ create_panel2 <- function(i,m){
     par(fig=c(0,1,0.5,1))
     symbols(data$var1_prop[data$year==i],data$var2_prop[data$year==i],
             circles=data$radius[data$year==i],fg=1,bg=alpha(data$mypalette[data$year==i],.5),
-            xlim=c(0,max(data$var1_prop)+0.05),ylim=c(0,max(data$var2_prop)+0.05),lwd=2,xlab=var1label,ylab=var2label,main=i,inches=FALSE)
+            xlim=c(0,max(data$var1_prop)+0.05),ylim=c(0,max(data$var2_prop)+0.05),lwd=2,xlab="",ylab="",main=i,inches=FALSE)
+    # control output of axis labels in case they are too long
+        #work out string width max
+        maxcexXh <- par('pin')[1]/max(strwidth(var1label,'inches'),strwidth(var2label,'inches'))
+        #work out string height max
+        maxcexXv <- (par('mai')[1]/par('mar')[1])/max(strheight(var1label,'inches'),strheight(var2label,'inches'))
+        maxcexX <- min(min(maxcexXh, maxcexXv),1)
+        title(xlab = var1label, ylab = var2label, cex.lab = maxcexX)
     text(data$var1_prop[data$year==i],data$var2_prop[data$year==i], data$group[data$year==i], cex=1,font=2)
 ngroup <- length(data$group[data$year==i])
 for(r in 1:ngroup){
@@ -186,4 +199,55 @@ maxtime <- m
 speed <- 2000
 library(brew)
 brew('code/scroll.brew', output='output/panel2_viewer.html')
+
+
+transparency <- FALSE
+data <- data[order(data$year),]
+## PANEL 3 IS A SEPARATE GRAPHIC -- IT SHOWS THE BUBBLES DRAGGING ACROSS A GROUP FRAME OVER TIME
+create_panel3 <- function(i,m){
+  png(paste0("output/scroll_images/panel_graphic3_",sprintf("%04d",m),".png"),res=100,width=500,height=800) 
+  par(mar=c(3.5,3,1.2,.7),mgp=c(2.2,1,0))
+  tgroup <- unique(data$group[order(data$year)])
+  ngroup <- length(data$group[data$year==i])
+  for(r in 1:ngroup){
+    k <- tgroup[sort(match(data$group[data$year==i],tgroup))][r]
+    l <- sort(match(data$group[data$year==i],tgroup))[r]
+    if(r==1) par(fig=c(figspace3[l,])) 
+    if(r>1) par(fig=c(figspace3[l,]), new=TRUE) 
+    i_year <- sort(unique(data$year[data$year<=i & data$group==k]))
+    i_alpha <- c(seq(0.1,0.5,length.out=(length(i_year)-1)),.7)[match(data$year[data$year<=i & data$group==k],i_year)]
+    i_color <- match(data$year[data$year<=i & data$group==k],i_year)
+    if(length(i_alpha)==1) i_alpha <- 0.7
+    if(transparency) mycol <- alpha(data$mypalette[data$year<=i & data$group==k],i_alpha)
+    if(!transparency) mycol <- colorRampPalette(c(as.character(data$mypalette[data$group==k][1]),"white"))(length(i_color)+1)[i_color]
+    symbols(data$var1_prop[data$year<=i & data$group==k],data$var2_prop[data$year<=i & data$group==k],
+            circles=data$radius[data$year<=i & data$group==k],fg=1,bg=mycol,
+            xlim=c(0,max(data$var1_prop)+0.05),ylim=c(0,max(data$var2_prop)+0.05),lwd=2,xlab="",ylab="",main=i,inches=FALSE)
+    # conttrol output of axis labels in case they are too long
+        #work out string width max
+        maxcexXh <- par('pin')[1]/max(strwidth(var1label,'inches'),strwidth(var2label,'inches'))
+        #work out string height max
+        maxcexXv <- (par('mai')[1]/par('mar')[1])/max(strheight(var1label,'inches'),strheight(var2label,'inches'))
+        maxcexX <- min(min(maxcexXh, maxcexXv),1)
+        title(xlab = var1label, ylab = var2label, cex.lab = maxcexX)
+    text(data$var1_prop[data$year==i & data$group==k],data$var2_prop[data$year==i & data$group==k], data$group[data$year==i & data$group==k], cex=1,font=2)
+    box()
+  }
+  dev.off()
+}
+
+## THIS CODE PRODUCES 1 FRAME PER STILL OBJECT 
+m <- 1
+k <- length(unique(data$year))
+for(j in 1:k){ 
+  i <- sort(unique(data$year))[j]
+  create_panel3(i,m)
+  m <- m + 1
+}
+
+panelkey <- "panel_graphic3_"
+maxtime <- m
+speed <- 2000
+library(brew)
+brew('code/scroll.brew', output='output/panel3_viewer.html')
 
