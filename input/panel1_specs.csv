@@ -1,25 +1,25 @@
 name,specification
 id,patient
-longtablename,lab_rna
-longvar,rna_v
-longvardate,rna_d
+longtablename,lab_cd4
+longvar,cd4_v
+longvardate,cd4_d
 longsubset,function(longvar) longvar > 0 & !is.na(longvar)
 eventtablename,follow
 event,death_y
 enddate,l_alive_d
 grouptablename,basic
-group,aids_y
+group,aids_preart_y
 groupsubset,
 starttablename,art
 startdate,art_sd
 starttype,first
-longvartrans,log10
-maxtime,30
+longvartrans,sqrt
+maxtime,730
 long2eventwindow,
-longvarlim,
+longvarlim,"c(0,1500)"
 problim,
-longticks,
-longlabel,Viral Load
+longticks,"c(0,25,100,150,350,500,1000,2000,5000)"
+longlabel,CD4+ Count
 timelabel,Days from Start
 eventlabel,Probability of Death
 grouplabels,0=No AIDS|1=AIDS|9=AIDS unknown

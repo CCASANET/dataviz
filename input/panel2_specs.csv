@@ -1,15 +1,15 @@
 name,specification
-vartable,basic
-var1,"basic$mode %in% c(""Bisexual"",""Homosexual contact"",""Homo/Bisexual and Injecting drug user"") & basic$male==1"
-var2,"as.numeric(convertdate(baseline_d,basic) - convertdate(birth_d,basic))/365.25 < 25"
-vartablesubset,"format(convertdate(baseline_d,basic),""%Y"") > 1998 & format(convertdate(baseline_d,basic),""%Y"") < 2008 & !(basic$mode %in% c(90,""Unknown""))"
+vartable,basic_cd4
+var1,basic_cd4$aids_cl_y==1
+var2,basic_cd4$cd4_v_cmp < 200
+vartablesubset,"format(convertdate(baseline_d,basic_cd4),""%Y"") > 1998 & format(convertdate(baseline_d,basic_cd4),""%Y"") < 2016 & basic_cd4$aids_cl_y %in% c(0,1) & !is.na(basic_cd4$aids_cl_y)"
 eventdate,baseline_d
 eventperiod,year
 group,site
-var1label1,MSM
-var1label0,non-MSM
-var2label1,<25
-var2label0,25 or more
-var1label,Proportion MSM
-var2label,Proportion aged<25 at HIV diagnosis
+var1label1,AIDS
+var1label0,no AIDS
+var2label1,<200
+var2label0,200+
+var1label,Proportion clinically diagnosed with AIDS
+var2label,Proportion CD4<200 at enrollment in HIV care
 minnum,10
