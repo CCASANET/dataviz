@@ -1,8 +1,8 @@
 name,specification
-vartable,basic_cd4
-var1,basic_cd4$aids_cl_y==1
-var2,basic_cd4$cd4_v_cmp < 200
-vartablesubset,"format(convertdate(baseline_d,basic_cd4),""%Y"") > 1998 & format(convertdate(baseline_d,basic_cd4),""%Y"") < 2016 & basic_cd4$aids_cl_y %in% c(0,1) & !is.na(basic_cd4$aids_cl_y)"
+vartable,basic_cd4_sim
+var1,basic_cd4_sim$aids_y==1
+var2,basic_cd4_sim$cd4_v_cmp < 200
+vartablesubset,"format(convertdate(baseline_d,basic_cd4_sim),""%Y"") > 1998 & format(convertdate(baseline_d,basic_cd4_sim),""%Y"") < 2016 & basic_cd4_sim$aids_y %in% c(0,1) & !is.na(basic_cd4_sim$aids_y)"
 eventdate,baseline_d
 eventperiod,year
 group,site
@@ -10,6 +10,6 @@ var1label1,AIDS
 var1label0,no AIDS
 var2label1,<200
 var2label0,200+
-var1label,Proportion clinically diagnosed with AIDS
+var1label,Proportion diagnosed with AIDS
 var2label,Proportion CD4<200 at enrollment in HIV care
 minnum,10

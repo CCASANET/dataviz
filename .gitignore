@@ -16,6 +16,7 @@ input/panel1_specs-lab_cd4.csv
 input/panel1_specs-lab_rna.csv
 input/panel1_specs_lab_rna.csv
 input/visit.csv
+input/adult_prevalence.csv
 output/*.avi
 output/mapping*
 output/*.png

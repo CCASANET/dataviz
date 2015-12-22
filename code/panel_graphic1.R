@@ -54,9 +54,9 @@ for(i in 1:nrow(specs)){
 if(exists("longsubset")){longsubset <- eval(parse(text=longsubset))}
 if(exists("maxtime")){maxtime <- eval(parse(text=maxtime))}
 if(exists("long2eventwindow")){long2eventwindow <- eval(parse(text=long2eventwindow))}
-if(exists("longvarlim")){longvarlim <- eval(parse(text=longvarlim))}
-if(exists("problim")){problim <- eval(parse(text=problim))}
-if(exists("longticks")){longticks <- eval(parse(text=longticks))}
+if(exists("longvarlim")){longvarlim <- eval(parse(text=tolower(longvarlim)))}
+if(exists("problim")){problim <- eval(parse(text=tolower(problim)))}
+if(exists("longticks")){longticks <- eval(parse(text=tolower(longticks)))}
 
 
 

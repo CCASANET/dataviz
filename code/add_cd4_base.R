@@ -29,13 +29,13 @@ set.seed(2)
 source("code/utility_functions.R")
 
 ## READ IN DATA FILES
-readtables <- c("basic","lab_cd4")
+readtables <- c("basic_sim","lab_cd4_sim")
 source("code/load_data.R")
 
-lab_cd4 <- merge(lab_cd4,basic[c("patient","baseline_d")],all.x=TRUE)
-lab_cd4 <- lab_cd4[!is.na(lab_cd4$cd4_v) & !is.na(lab_cd4$cd4_d),]
-lab_cd4 <- lab_cd4[!duplicated(paste(lab_cd4$patient,lab_cd4$cd4_d)),]
-cd4_baseline <- getbaseline(baseline_d,cd4_d,patient,value=cd4_v,before=90,after=90,type="closest",data=lab_cd4,dateformat="%Y-%m-%d")
-basic_cd4 <- merge(basic,cd4_baseline,by.x="patient",by.y="id")
+lab_cd4_sim <- merge(lab_cd4_sim,basic_sim[c("patient","baseline_d")],all.x=TRUE)
+lab_cd4_sim <- lab_cd4_sim[!is.na(lab_cd4_sim$cd4_v) & !is.na(lab_cd4_sim$cd4_d),]
+lab_cd4_sim <- lab_cd4_sim[!duplicated(paste(lab_cd4_sim$patient,lab_cd4_sim$cd4_d)),]
+cd4_baseline <- getbaseline(baseline_d,cd4_d,patient,value=cd4_v,before=90,after=90,type="closest",data=lab_cd4_sim,dateformat="%Y-%m-%d")
+basic_cd4 <- merge(basic_sim,cd4_baseline,by.x="patient",by.y="id")
 
-write.csv(basic_cd4,"input/basic_cd4.csv",na="",row.names=FALSE)
+write.csv(basic_cd4,"input/basic_cd4_sim.csv",na="",row.names=FALSE)

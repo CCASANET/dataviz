@@ -1,25 +1,25 @@
 name,specification
 id,patient
-longtablename,lab_cd4
+longtablename,lab_cd4_sim
 longvar,cd4_v
 longvardate,cd4_d
 longsubset,function(longvar) longvar > 0 & !is.na(longvar)
-eventtablename,follow
+eventtablename,follow_sim
 event,death_y
 enddate,l_alive_d
-grouptablename,basic
-group,aids_preart_y
+grouptablename,basic_sim
+group,aids_y
 groupsubset,
-starttablename,art
+starttablename,art_sim
 startdate,art_sd
 starttype,first
 longvartrans,sqrt
-maxtime,730
+maxtime,30
 long2eventwindow,
 longvarlim,"c(0,1500)"
-problim,
+problim,"c(0,0.15)"
 longticks,"c(0,25,100,150,350,500,1000,2000,5000)"
 longlabel,CD4+ Count
-timelabel,Days from Start
-eventlabel,Probability of Death
+timelabel,Days from ART start
+eventlabel,Cumulative Probability of Death
 grouplabels,0=No AIDS|1=AIDS|9=AIDS unknown
